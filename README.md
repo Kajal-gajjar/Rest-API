@@ -1,5 +1,5 @@
 # Rest-API
-Installation
+**Installation**
 
 Please follow below steps:
 1. nvm use
