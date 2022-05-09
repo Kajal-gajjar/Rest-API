@@ -67,7 +67,8 @@ const updateStudent = async (req, res) => {
     { _id: studentId },
     newvalues
   );
-  res.send("The record has been updated successfully.");
+  if (updatedStudent.modifiedCount > 0)
+    res.status(httpStatusCode.SUCCESS).send(httpErrorMsg.UPDATE_STUDENT);
 };
 
 //delete the student
@@ -86,7 +87,8 @@ const deleteStudent = async (req, res) => {
     { _id: studentId },
     newvalues
   );
-  res.send("The record has been deleted successfully.");
+  if (updatedStudent.modifiedCount > 0)
+    res.status(httpStatusCode.SUCCESS).send(httpErrorMsg.DELETE_STUDENT);
 };
 
 //Log out API
@@ -94,13 +96,33 @@ const studentLogout = async (req, res) => {
   const token = req.headers.token;
   const { student } = req;
 
-  // req.student.deleteToken(req.headers.token, (err, user) => {
-  //   if (err) return res.status(400).send(err);
-  //   res.sendStatus(200);
-  // });
-
   res.clearCookie(token);
-  res.send("Logout Sucessfully");
+  res.status(httpStatusCode.SUCCESS).send(httpErrorMsg.LOGOUT);
+};
+
+//activate the student
+const activateStudent = async (req, res) => {
+  const student = await StudentModel.findOne({ email: req.body.email });
+  let studentId = student._id;
+  if (!student.active) {
+    if (!student.validPassword(req.body.password))
+      res.status(httpStatusCode.UNAUTHORIZED).send(httpErrorMsg.INVALID_DATA);
+
+    var newvalues = {
+      $set: {
+        active: true,
+      },
+    };
+
+    const updatedStudent = await StudentModel.updateOne(
+      { _id: studentId },
+      newvalues
+    );
+
+    if (updatedStudent.modifiedCount > 0)
+      res.status(httpStatusCode.SUCCESS).send(httpErrorMsg.ACTIVATE_STUDENT);
+  } else
+    res.status(httpStatusCode.BAD_REQUEST).send(httpErrorMsg.ACTIVATED_STUDENT);
 };
 
 export default {
@@ -109,4 +131,5 @@ export default {
   updateStudent,
   deleteStudent,
   studentLogout,
+  activateStudent,
 };

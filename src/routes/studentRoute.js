@@ -7,5 +7,6 @@ router.get("/", studentController.getStudents);
 router.put("/update", studentController.updateStudent);
 router.delete("/", studentController.deleteStudent);
 router.get("/logout", studentController.studentLogout);
+router.post("/active", studentController.activateStudent);
 
 export default router;
