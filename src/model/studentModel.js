@@ -7,9 +7,9 @@ const Schema = mongoose.Schema;
 const StudentModelSchema = new Schema({
   name: String,
   password: String,
-  courseId: { type: mongoose.Types.ObjectId, required: true },
+  courseId: [{ type: mongoose.Types.ObjectId, required: true }],
   email: String,
-  token: String,
+  active: { type: Boolean, default: true },
 });
 
 // hash the password

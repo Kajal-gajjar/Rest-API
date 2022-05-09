@@ -10,10 +10,10 @@ export const validateCourse = (course) => {
 export const validateStudent = (student) => {
   const schema = {
     name: Joi.string().min(3).required(),
-    courseId: Joi.string().hex().length(24).required(),
+    courseId: Joi.array().items(Joi.string().hex().length(24)).required(),
     password: Joi.string().required(),
     email: Joi.string().required(),
-    token: Joi.string(),
+    active: Joi.boolean().default(true),
   };
   return Joi.validate(student, schema);
 };
@@ -27,7 +27,7 @@ export const validateEmail = (email) => {
 export const validateUpdatedStudent = (student) => {
   const schema = {
     name: Joi.string().min(3),
-    courseId: Joi.string().hex().length(24),
+    courseId: Joi.array().items(Joi.string().hex().length(24)),
   };
   return Joi.validate(student, schema);
 };

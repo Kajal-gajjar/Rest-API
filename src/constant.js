@@ -14,6 +14,7 @@ export const httpErrorMsg = {
     "Student details for the requested mail Id is not found",
   SUCCESS_LOGIN: "Login is Successful. ",
   FORBIDDEN_TOKEN_ERROR_MSG: "A token is required for authentication",
+  DUPLICATE_EMAIL: "Mail ID is already exsist.",
 };
 
 export const envVariable = () => {
