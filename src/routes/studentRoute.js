@@ -8,5 +8,6 @@ router.put("/update", studentController.updateStudent);
 router.delete("/", studentController.deleteStudent);
 router.get("/logout", studentController.studentLogout);
 router.post("/active", studentController.activateStudent);
+router.get("/search/:name", studentController.searchStudent);
 
 export default router;
