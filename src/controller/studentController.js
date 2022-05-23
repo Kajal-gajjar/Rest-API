@@ -7,22 +7,48 @@ import mongoose from "mongoose";
 
 //get student list
 const getStudents = async (req, res) => {
-  const values = await StudentModel.aggregate([
-    {
+  const { name, courses } = req.query;
+  const coursesArr = courses.split(",").map((x) => mongoose.Types.ObjectId(x));
+  const queryStudentDetailsMatch = {
+    $match: {
+      active: true,
+    },
+  };
+  const queryStudentDetailsLookup = {
+    $lookup: {
+      from: "coursemodels",
+      localField: "courseId",
+      foreignField: "_id",
+      as: "CourseDetails",
+    },
+  };
+  let query = [queryStudentDetailsMatch, queryStudentDetailsLookup];
+  if (name) {
+    const filterQuery = {
       $match: {
-        active: true,
+        name: new RegExp(req.query.name, "i"),
       },
-    },
-    {
-      $lookup: {
-        from: "coursemodels",
-        localField: "courseId",
-        foreignField: "_id",
-        as: "Course Details",
+    };
+    query.push(filterQuery);
+  }
+  if (courses) {
+    const filterCourse = {
+      $match: {
+        courseId: {
+          $all: [
+            {
+              $elemMatch: {
+                $in: coursesArr,
+              },
+            },
+          ],
+        },
       },
-    },
-  ]);
+    };
+    query.push(filterCourse);
+  }
 
+  const values = await StudentModel.aggregate(query);
   res.send(values);
 };
 
@@ -125,14 +151,6 @@ const activateStudent = async (req, res) => {
     res.status(httpStatusCode.BAD_REQUEST).send(httpErrorMsg.ACTIVATED_STUDENT);
 };
 
-//search API
-const searchStudent = (req, res) => {
-  let regex = new RegExp(req.params.name, "i");
-  StudentModel.find({ name: regex }).then((result) => {
-    res.status(httpStatusCode.SUCCESS).json(result);
-  });
-};
-
 export default {
   getStudentDetails,
   getStudents,
@@ -140,5 +158,4 @@ export default {
   deleteStudent,
   studentLogout,
   activateStudent,
-  searchStudent,
 };

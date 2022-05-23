@@ -3,11 +3,10 @@ import studentController from "../controller/studentController.js";
 const router = express.Router();
 
 router.get("/details", studentController.getStudentDetails);
-router.get("/", studentController.getStudents);
+router.get("/list", studentController.getStudents);
 router.put("/update", studentController.updateStudent);
 router.delete("/", studentController.deleteStudent);
 router.get("/logout", studentController.studentLogout);
 router.post("/active", studentController.activateStudent);
-router.get("/search/:name", studentController.searchStudent);
 
 export default router;

@@ -3,7 +3,6 @@ import StudentModel from "../model/studentModel.js";
 import jwt from "jsonwebtoken";
 import { validateEmail, validateStudent } from "../middleware/validator.js";
 import mongoose from "mongoose";
-import { verifyToken } from "../middleware/checkAuth.js";
 
 //Student Login
 const studentLogin = async (req, res) => {
@@ -13,18 +12,17 @@ const studentLogin = async (req, res) => {
       .status(httpStatusCode.NOT_FOUND)
       .send(httpErrorMsg.STUDENT_NOT_FOUND_EMAIL);
 
-  if (!student.validPassword(req.body.password)) {
-    res.send("Usename or password is invalid!!");
-  } else {
-    const token = jwt.sign(
-      { user_id: student._id, email: student.email },
-      process.env.TOKEN_KEY,
-      {
-        expiresIn: "2h",
-      }
-    );
-    res.status(httpStatusCode.SUCCESS).send({ token });
-  }
+  if (!student.validPassword(req.body.password))
+    return res.send("Usename or password is invalid!!");
+
+  const token = jwt.sign(
+    { user_id: student._id, email: student.email },
+    process.env.TOKEN_KEY,
+    {
+      expiresIn: "2h",
+    }
+  );
+  res.status(httpStatusCode.SUCCESS).send({ token });
 };
 
 //add new record of student
