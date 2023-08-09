@@ -1,24 +1,30 @@
-name: Push-to-EC2
+name: Deploy to Server
 
-# Trigger deployment only on push to master branch
 on:
   push:
     branches:
       - master
+      - develop
 
 jobs:
   deploy:
-    name: Deploy to EC2 on master branch push
+    name: Deploy to Server
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        branch: [master, develop]
+        server: [server1, server2]
 
     steps:
       - name: Checkout the files
         uses: actions/checkout@v2
 
-      - name: Deploy to Server 1
+      - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.HOST_DNS }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+          REMOTE_HOST: ${{ secrets[format('{0}_HOST_DNS', matrix.server)] }}
+          REMOTE_USER: ${{ secrets[format('{0}_USERNAME', matrix.server)] }}
+          TARGET: ${{ secrets[format('{0}_TARGET_DIR', matrix.server)] }}
+        if: github.ref == format('refs/heads/{0}', matrix.branch)
